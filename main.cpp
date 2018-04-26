@@ -1,9 +1,29 @@
 #include <iostream>
-
-using namespace std;
+#include "graph.h"
 
 int main()
 {
-    cout << "Hello World!" << endl;
+    Node A("A");
+    Node B("B");
+    Node C("C");
+    Node D("D");
+
+    Edge eAB("1",4,A,B);
+    Edge eBD("2",1,B,D);
+    Edge eDC("3",2,D,C);
+    Edge eAC("4",10,A,C);
+
+    Graph network;
+
+    network.graphNodes.push_back(A);
+    network.graphNodes.push_back(B);
+    network.graphNodes.push_back(C);
+    network.graphNodes.push_back(D);
+
+    network.graphEdges.push_back(eAB);
+    network.graphEdges.push_back(eBD);
+    network.graphEdges.push_back(eDC);
+    network.graphEdges.push_back(eAC);
+
     return 0;
 }

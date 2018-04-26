@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    router.cpp
+    graph.cpp
 
 HEADERS += \
-    router.h
+    graph.h
