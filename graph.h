@@ -14,7 +14,8 @@ std::string name;
 //routing table
 std::vector <Node> visitedNodes;
 std::vector <Node> unvisitedNodes;
-std::vector <Node> nodeList;
+std::vector <Node> connectedNodes;
+std::vector <int> connectedWeights;
 std::vector <Node> prevNode;
 std::vector <int> shortestPath;
 
@@ -38,7 +39,7 @@ public:
     //methods
     Edge();
     Edge(std::string name, int weight, Node a, Node b);
-    float getEdgeWeight();
+    int getEdgeWeight();
     Node getNodeA();
     Node getNodeB();
     void printEdge();

@@ -11,7 +11,7 @@ int main()
     Edge eAB("1",4,A,B);
     Edge eBD("2",1,B,D);
     Edge eDC("3",2,D,C);
-    Edge eAC("4",10,A,C);
+    Edge eCA("4",10,C,A);
 
     Graph network("Network 1");
 
@@ -23,7 +23,7 @@ int main()
     network.graphEdges.push_back(eAB);
     network.graphEdges.push_back(eBD);
     network.graphEdges.push_back(eDC);
-    network.graphEdges.push_back(eAC);
+    network.graphEdges.push_back(eCA);
 
     network.printGraphNodes();
     network.printGraphEdges();
