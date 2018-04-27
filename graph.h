@@ -11,10 +11,19 @@ public:
 std::string name;
 
 
+//routing table
+std::vector <Node> visitedNodes;
+std::vector <Node> unvisitedNodes;
+std::vector <Node> nodeList;
+std::vector <Node> prevNode;
+std::vector <int> shortestPath;
+
 //methods
     Node();
     Node(std::string name);
     std::string getNodeName();
+    bool compareToNode(Node b);
+
 
 };
 
@@ -23,12 +32,12 @@ class Edge
 public:
     //properties
     std::string name;
-    float weight;
+    int weight;
     std::vector<Node> link;
 
     //methods
     Edge();
-    Edge(std::string name, float weight, Node a, Node b);
+    Edge(std::string name, int weight, Node a, Node b);
     float getEdgeWeight();
     Node getNodeA();
     Node getNodeB();
@@ -46,6 +55,10 @@ public:
 
     //methods
     Graph();
+    Graph(std::string name);
+    void printGraphNodes();
+    void printGraphEdges();
+    void buildTable(Node * node);
 };
 
-#endif // GRAPH
+#endif // GRAPH_H
