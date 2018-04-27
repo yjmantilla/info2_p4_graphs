@@ -97,11 +97,43 @@ void Graph::buildTable(Node * node)
         else{node->shortestPath[i]=MAX_INT;}
     }
 
+    while(node->visitedNodes.size()<this->graphNodes.size())
+    {
         //determine the node with smallest known weight
 
-        auto smallest = std::min_element(node->shortestPath.begin(),node->shortestPath.end());
-        std::cout<<"\nNode with smallest weight: " <<smallest - node->shortestPath.begin()<<"\n";
-        int s = smallest - node->shortestPath.begin();
+
+        unsigned int smallest=0;
+        for(unsigned int i = 0; i < node->shortestPath.size(); i++)
+        {
+            bool wasItVisited=false;
+            //bool wasItVisited2=false;
+            for(unsigned int j=0; j<node->visitedNodes.size();j++)
+            {
+                if(this->graphNodes[i].compareToNode(node->visitedNodes[j]))
+                {
+                    wasItVisited=true;
+                }
+            }
+
+            for(unsigned int j=0; j<node->visitedNodes.size();j++)
+            {
+                if(this->graphNodes[smallest].compareToNode(node->visitedNodes[j]))
+                {
+                    //wasItVisited2=true;
+                    smallest++;
+                }
+            }
+
+            if(node->shortestPath[i] < node->shortestPath[smallest] && !wasItVisited)
+            {
+                std::cout<<"\n"<<node->shortestPath[i]<<" < "<<node->shortestPath[smallest]<<"\n";
+                smallest = i;
+            }
+        }
+
+        //auto smallest = std::min_element(node->shortestPath.begin(),node->shortestPath.end());
+        std::cout<<"\nNode with smallest weight: " <<smallest /*- node->shortestPath.begin()*/<<"\n";
+        int unsigned s = smallest; //- node->shortestPath.begin();
         //aqui el problema es que ademas se debe cumplir que aun no hayamos visitado el nodo
         std::cout<<"\nWhich is node: "<<this->graphNodes[s].getNodeName()<<"\n";
 
@@ -148,8 +180,13 @@ void Graph::buildTable(Node * node)
         node->unvisitedNodes.erase(node->unvisitedNodes.begin()+s);
 
 
+    }
 
-
+    std::cout<<"\n\n\n";
+    for(unsigned int i = 0;i<this->graphNodes.size();i++)
+    {
+        std::cout<<this->graphNodes[i].getNodeName()<<" "<<node->shortestPath[i]<<" "<<node->prevNode[i].getNodeName()<<"\n";
+    }
 
 
 }
