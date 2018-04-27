@@ -85,6 +85,7 @@ void Graph::printGraphEdges()
 
 void Graph::buildTable(Node * node)
 {
+    //initialization of the algorithm
     node->nodeList = this->graphNodes;
     node->unvisitedNodes = this->graphNodes;
     node->shortestPath.resize(this->graphNodes.size());
@@ -95,6 +96,11 @@ void Graph::buildTable(Node * node)
         else{node->shortestPath[i]=MAX_INT;}
     }
 
+    //start visiting
+    for(unsigned int i=0;i<node->nodeList.size();i++)
+    {
+
+    }
 
 
 }
