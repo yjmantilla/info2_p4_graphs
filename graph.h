@@ -2,6 +2,7 @@
 #define GRAPH_H
 #include <iostream>
 #include <vector>
+#include <stack>
 
 class Node
 {
@@ -54,12 +55,15 @@ public:
     std::vector<Edge> graphEdges;
     std::string name;
 
+
     //methods
     Graph();
     Graph(std::string name);
     void printGraphNodes();
     void printGraphEdges();
     void buildTable(Node * node);
+    std::string getTheWay(Node * start, Node * end);
+    bool findNode(Node whatToFind, std::vector<Node> whereToFindIt, unsigned int * position);
 };
 
 #endif // GRAPH_H

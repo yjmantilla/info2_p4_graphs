@@ -1,5 +1,6 @@
 #include "graph.h"
 #include <algorithm>
+#include <stack>
 #define MAX_INT 32767
 
 Node::Node()
@@ -106,23 +107,37 @@ void Graph::buildTable(Node * node)
         for(unsigned int i = 0; i < node->shortestPath.size(); i++)
         {
             bool wasItVisited=false;
-            //bool wasItVisited2=false;
-            for(unsigned int j=0; j<node->visitedNodes.size();j++)
+
+//            for(unsigned int j=0; j<node->visitedNodes.size();j++)
+//            {
+//                if(this->graphNodes[i].compareToNode(node->visitedNodes[j]))
+//                {
+//                    wasItVisited=true;
+//                }
+//            }
+
+            //reimplementation with new function
+            unsigned int dummypos;
+            wasItVisited = Graph::findNode(this->graphNodes[i],node->visitedNodes,&dummypos);
+
+            bool smallestAlreadyVisited;
+
+            while(1)
             {
-                if(this->graphNodes[i].compareToNode(node->visitedNodes[j]))
-                {
-                    wasItVisited=true;
-                }
+            smallestAlreadyVisited = Graph::findNode(this->graphNodes[smallest],node->visitedNodes,&dummypos);
+            if(smallestAlreadyVisited){smallest++;}
+            else{break;}
             }
 
-            for(unsigned int j=0; j<node->visitedNodes.size();j++)
-            {
-                if(this->graphNodes[smallest].compareToNode(node->visitedNodes[j]))
-                {
-                    //wasItVisited2=true;
-                    smallest++;
-                }
-            }
+//            for(unsigned int j=0; j<node->visitedNodes.size();j++)
+//            {
+//                if(this->graphNodes[smallest].compareToNode(node->visitedNodes[j]))
+//                {
+//                    smallest++;
+//                }
+//            }
+
+
 
             if(node->shortestPath[i] < node->shortestPath[smallest] && !wasItVisited)
             {
@@ -134,7 +149,7 @@ void Graph::buildTable(Node * node)
         //auto smallest = std::min_element(node->shortestPath.begin(),node->shortestPath.end());
         std::cout<<"\nNode with smallest weight: " <<smallest /*- node->shortestPath.begin()*/<<"\n";
         int unsigned s = smallest; //- node->shortestPath.begin();
-        //aqui el problema es que ademas se debe cumplir que aun no hayamos visitado el nodo
+        //problem, we need that the node was also not visited previously
         std::cout<<"\nWhich is node: "<<this->graphNodes[s].getNodeName()<<"\n";
 
         //find connected nodes of smallest and put them in connectedNodes
@@ -188,6 +203,55 @@ void Graph::buildTable(Node * node)
         std::cout<<this->graphNodes[i].getNodeName()<<" "<<node->shortestPath[i]<<" "<<node->prevNode[i].getNodeName()<<"\n";
     }
 
+    //clean vectors for further updating
+    node->visitedNodes.erase(node->visitedNodes.begin(),node->visitedNodes.end());
+    node->unvisitedNodes.erase(node->unvisitedNodes.begin(),node->unvisitedNodes.end());
+}
 
+std::string Graph::getTheWay(Node * start, Node * end)
+{
+ std::string wayString;
+ std::stack<Node> way;
+
+ //update routing table of start node.
+ this->buildTable(start); //apparently does not work, update table before calling function
+
+ //find position of end node, it was not necessary? but verify it exist
+ unsigned int position;
+
+ if (!Graph::findNode(*end,this->graphNodes,&position)){return "unreachable";}
+
+ way.push(*end);
+
+ while(!start->compareToNode(way.top()))
+ {
+   Graph::findNode(way.top(),this->graphNodes,&position);
+   way.push(start->prevNode.at(position));
+ }
+
+ while(!way.empty())
+ {
+     wayString.append(way.top().getNodeName());
+     way.pop();
+     if(!way.empty()){wayString.append("-");}
+ }
+
+ //std::cout<<"\n"<<wayString<<"\n";//nice crash dud
+ return wayString;
+}
+
+bool Graph::findNode(Node whatToFind, std::vector<Node> whereToFindIt, unsigned int *position)
+{
+    for(unsigned int j=0; j<whereToFindIt.size();j++)
+    {
+        if(whereToFindIt.at(j).compareToNode(whatToFind))
+        {
+            *position=j;
+            return true;
+        }
+    }
+
+    position = NULL;
+    return false;
 }
 

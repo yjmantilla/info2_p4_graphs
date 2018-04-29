@@ -43,7 +43,8 @@ int main()
 
     network.printGraphNodes();
     network.printGraphEdges();
-    network.buildTable(&D);
+    network.buildTable(&A);
+    std::cout<<network.getTheWay(&A,&A);
     std::cout<<std::endl;
 
     network2.graphNodes.push_back(a);
@@ -60,7 +61,8 @@ int main()
     network2.graphEdges.push_back(Ede);
     network2.graphEdges.push_back(Ebe);
 
-    //network2.buildTable(&a);
+    network2.buildTable(&a);
+    std::cout<<network2.getTheWay(&a,&e);
 
     return 0;
 }
