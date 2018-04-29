@@ -1,0 +1,43 @@
+git stash
+git pop
+
+git checkout -B nombredelbranch //crear nueva rama
+
+cambiar de rama
+git checkout nombredelarama
+
+1 clonar el repositorio
+
+regla: en el master solo va lo aprobado, no se trabaja sobre el
+-->siempre se edita en ramas
+
+git branch te dice en que rama se esta actualmente
+
+git checkout -B name , crea la rama name y se cambia a ella
+
+git branch da la lista de ramas y el punto esta en la actual
+
+git checkout - //cambia  a la master
+
+el checkout se hace desde la rama que se quiere copiar (trabajar a partir)
+
+-----> parados en la rama se hacen cambios
+
+se hace el add y el commit
+
+git push origin nombredelarama , donde se quiere subir
+
+git push origin master la sube al master
+
+new pull request --> fusiona (merge) un master con un branch, y se agregan reviewers que son los que lo aprueban antes de que suceda
+
+(esto se hizo remoto)
+
+
+git pull se trae todo lo que esta en el repositorio
+
+git branch rama tambien la crea pero no se cambia a ella
+
+git reset
+
+ctrl o, editor vim
