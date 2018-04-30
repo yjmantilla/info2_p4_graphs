@@ -42,5 +42,12 @@ int main()
     network2.buildTable("A");
     std::cout<<network2.getTheWay("A","E")<<" with cost "<<network2.getWayWeight("A","E");
     std::cout<<std::endl;
+
+    //network.showTableOfNode("A");
+    network.showAllNodeTables();
+    network.showTableOfGraph();
+    network2.showTableOfGraph();
+    network2.showAllNodeTables();
+    network2.showTableOfGraph();
     return 0;
 }

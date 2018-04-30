@@ -16,6 +16,7 @@ Node::Node(std::string name)
 std::string Node::getNodeName()
 {
     return this->name;
+
 }
 
 bool Node::compareToNode(Node b)
@@ -41,6 +42,11 @@ Edge::Edge(int weight, Node a, Node b)
     this->link.push_back(b);
 }
 
+Edge::Edge(std::string name)
+{
+    this->name = name;
+}
+
 int Edge::getEdgeWeight()
 {
     return this->weight;
@@ -58,7 +64,7 @@ Node Edge::getNodeB()
 
 void Edge::printEdge()
 {
-    std::cout<<this->link.front().getNodeName()<<"<-"<<this->getEdgeWeight()<<"->"<<this->link.back().getNodeName()<<"\n";
+    std::cout<<this->link.front().getNodeName()<<"-"<<this->getEdgeWeight()<<"-"<<this->link.back().getNodeName()<<"\n";
 }
 
 std::string Edge::getEdgeName()
@@ -132,6 +138,7 @@ int Graph::buildTable(Node * node)
     node->unvisitedNodes = this->graphNodes;
     node->shortestPath.resize(this->graphNodes.size());
     node->prevNode.resize(this->graphNodes.size());
+
 
     // give infinite weight to all nodes except the node which is the same as the starting node
     for(unsigned int i=0;i<this->graphNodes.size();i++)
@@ -242,7 +249,19 @@ int Graph::buildTable(Node * node)
     //clean vectors for further updating
     node->visitedNodes.erase(node->visitedNodes.begin(),node->visitedNodes.end());
     node->unvisitedNodes.erase(node->unvisitedNodes.begin(),node->unvisitedNodes.end());
+    node->connectedNodes.erase(node->connectedNodes.begin(),node->connectedNodes.end());
+    node->connectedWeights.erase(node->connectedWeights.begin(),node->connectedWeights.end());
 
+    //flat the info of previous nodes, increase of performance
+    for(unsigned int i = 0; i < this->graphNodes.size();i++)
+    {
+        node->prevNode[i].prevNode.erase(node->prevNode[i].prevNode.begin(),node->prevNode[i].prevNode.end());
+        node->prevNode[i].shortestPath.erase(node->prevNode[i].shortestPath.begin(),node->prevNode[i].shortestPath.end());
+        node->prevNode[i].unvisitedNodes.erase(node->prevNode[i].unvisitedNodes.begin(),node->prevNode[i].unvisitedNodes.end());
+        node->prevNode[i].visitedNodes.erase(node->prevNode[i].visitedNodes.begin(),node->prevNode[i].visitedNodes.end());
+        node->prevNode[i].connectedNodes.erase(node->prevNode[i].connectedNodes.begin(),node->prevNode[i].connectedNodes.end());
+        node->prevNode[i].connectedWeights.erase(node->prevNode[i].connectedWeights.begin(),node->prevNode[i].connectedWeights.end());
+    }
     return 0;
 }
 
@@ -358,6 +377,23 @@ bool Graph::findEdge(Edge whatToFind, std::vector<Edge> whereToFindIt)
     return false;
 }
 
+bool Graph::findEdge(Edge whatToFind, std::vector<Edge> whereToFindIt, unsigned int *position)
+{
+
+    for(unsigned int j=0; j<whereToFindIt.size();j++)
+    {
+        if(whereToFindIt.at(j).compareToEdge(whatToFind))
+        {
+            *position = j;
+            return true;
+        }
+    }
+
+    position = NULL;
+    return false;
+}
+
+
 void Graph::addNode(Node a)
 {
     if(this->findNode(a,this->graphNodes)){std::cout<<"\nError. Node "<<a.getNodeName()<<" already exist...\n";return;}
@@ -416,6 +452,143 @@ void Graph::addNodesFromGraphEdges()
     for(unsigned int i = 0;i < this->graphEdges.size();i++)
     {
         this->addNodesFromEdge(graphEdges.at(i));
+    }
+
+    return;
+}
+
+void Graph::deleteNode(Node a)
+{
+    unsigned int pos;
+    if(!this->findNode(a,this->graphNodes,&pos))
+    {
+        std::cout<<"\nError, Node "<<a.getNodeName()<<" does not exist...\n";
+        return;
+    }
+
+    else
+    {
+        this->graphNodes.erase(this->graphNodes.begin() + pos);
+
+        //delete edges related to node
+        for(unsigned int j=0; j<this->graphEdges.size();j++)
+        {
+            if(this->graphEdges.at(j).getNodeA().compareToNode(a)||this->graphEdges.at(j).getNodeB().compareToNode(a))
+            {
+                this->graphEdges.erase(this->graphEdges.begin() + j);
+            }
+        }
+
+    }
+
+    std::cout<<"\nNode "<<a.getNodeName()<<" and associated Edges deleted\n";
+    return;
+}
+
+void Graph::deleteNode(std::string nameA)
+{
+    Node a(nameA);
+    this->deleteNode(a);
+    return;
+}
+
+void Graph::deleteEdge(Edge a)
+{
+    unsigned int pos;
+    if (!this->findEdge(a,this->graphEdges,&pos))
+    {
+        std::cout<<"\nError, Edge "<<a.getEdgeName()<<" does not exist...\n";
+    }
+    else
+    {
+        this->graphEdges.erase(this->graphEdges.begin() + pos);
+    }
+    std::cout<<"\nEdge "<<a.getEdgeName()<<" deleted\n";
+    return;
+}
+
+void Graph::deleteEdge(std::string nameE)
+{
+    Edge E(nameE);
+
+    this->deleteEdge(E);
+    return;
+}
+
+void Graph::deleteEdge(int weight, Node A, Node B)
+{
+    Edge E(weight,A,B);
+    this->deleteEdge(E);
+    return;
+}
+
+void Graph::deleteEdge(int weight, std::string nameA, std::string nameB)
+{
+    Node A(nameA);
+    Node B(nameB);
+
+    this->deleteEdge(weight,A,B);
+    return;
+}
+
+void Graph::showTableOfNode(Node a)
+{
+    //update table
+
+    this->buildTable(&a);
+
+    //print results for debug
+    std::cout<<"\nNode "<<a.getNodeName()<<" table:\n";
+
+    std::cout<<"\nName SP Way\n";
+
+    for(unsigned int i = 0;i<this->graphNodes.size();i++)
+    {
+        std::cout<<this->graphNodes[i].getNodeName()<<"    "<<a.shortestPath[i]<<"  "<<this->getTheWay(a.getNodeName(),this->graphNodes.at(i).getNodeName())<<"\n";
+    }
+
+    std::cout<<std::endl;
+    return;
+}
+
+void Graph::showTableOfNode(std::string nameA)
+{
+    Node A(nameA);
+
+    this->showTableOfNode(A);
+    return;
+}
+
+void Graph::showTableOfGraph() //for some reason this code makes the program slow
+{
+    std::cout<<"\n  ";
+    for(unsigned int i = 0; i < this->graphNodes.size(); i++)
+    {
+        std::cout<<this->graphNodes.at(i).getNodeName()<<" ";
+    }
+
+    std::cout<<"\n";
+
+    for(unsigned int i = 0; i < this->graphNodes.size(); i++)
+    {
+        this->buildTable(&this->graphNodes.at(i));
+        std::cout<<this->graphNodes.at(i).getNodeName()<<" ";
+        for(unsigned int j = 0; j < this->graphNodes.size(); j++)
+        {
+            std::cout<<this->graphNodes.at(i).shortestPath.at(j)<<" ";
+        }
+
+        std::cout<<std::endl;
+    }
+
+    return;
+}
+
+void Graph::showAllNodeTables()
+{
+    for(unsigned int i =0;i < this->graphNodes.size();i++)
+    {
+        this->showTableOfNode(this->graphNodes.at(i));
     }
 
     return;
