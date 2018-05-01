@@ -730,7 +730,7 @@ void Graph::saveGraphToFile(std::string filename)
         {
             ofs<<this->graphEdges.at(i).getNodeA().getNodeName()<<","<<this->graphEdges.at(i).getEdgeWeight()<<","<<this->graphEdges.at(i).getNodeB().getNodeName()<<"\n";
         }
-        else //last
+        else //last (no endl in the last one)
         {
             ofs<<this->graphEdges.at(i).getNodeA().getNodeName()<<","<<this->graphEdges.at(i).getEdgeWeight()<<","<<this->graphEdges.at(i).getNodeB().getNodeName();
         }
