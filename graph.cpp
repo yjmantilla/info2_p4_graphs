@@ -1,7 +1,13 @@
 #include "graph.h"
 #include <algorithm>
 #include <stack>
-#define MAX_INT 32767
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <time.h>
+#include <stdlib.h>
+
+#define MAX_INT 32767 // represents infinite weigth (node is unreachable)
 
 Node::Node()
 {
@@ -104,7 +110,12 @@ Graph::Graph()
 
 Graph::Graph(std::string name)
 {
- this->name=name;
+    this->name=name;
+}
+
+std::string Graph::getGraphName()
+{
+ return this->name;
 }
 
 void Graph::printGraphNodes()
@@ -127,6 +138,12 @@ void Graph::printGraphEdges()
 
 int Graph::buildTable(Node * node)
 {
+    /*
+     *  Based on:https://medium.com/basecs/finding-the-shortest-path-with-a-little-help-from-dijkstra-613149fbdc8e
+     *  Dijkstra’s algorithm can be used to determine the shortest path from one node
+     *  in a graph to every other node within the same graph data structure, provided
+     *  that the nodes are reachable from the starting node.
+    */
     //check if node exist on graph
     if(!this->findNode(*node,this->graphNodes))
     {
@@ -538,7 +555,7 @@ void Graph::showTableOfNode(Node a)
     this->buildTable(&a);
 
     //print results for debug
-    std::cout<<"\nNode "<<a.getNodeName()<<" table:\n";
+    std::cout<<"\nNode "<<a.getNodeName()<<" table of Graph "<<this->getGraphName()<<":\n";
 
     std::cout<<"\nName SP Way\n";
 
@@ -561,7 +578,7 @@ void Graph::showTableOfNode(std::string nameA)
 
 void Graph::showTableOfGraph() //for some reason this code makes the program slow
 {
-    std::cout<<"\n  ";
+    std::cout<<"\nTable of Graph: "<<this->getGraphName()<<"\n\n  ";
     for(unsigned int i = 0; i < this->graphNodes.size(); i++)
     {
         std::cout<<this->graphNodes.at(i).getNodeName()<<" ";
@@ -592,5 +609,133 @@ void Graph::showAllNodeTables()
     }
 
     return;
+}
+
+void Graph::loadEdgeFile(std::string filename)
+{
+    std::fstream ifs(filename,std::ifstream::in);
+    if(!ifs.good()){std::cout<<"\nError opening file\n";return;}
+
+    std::string buffer;
+    std::string nodeA;
+    std::string nodeB;
+    std::string weight_s;
+    int weight;
+
+    std::cout<<"\nLoading Edges from "<<filename<<":\n";
+    while(1)
+    {
+        std::getline(ifs,buffer);
+
+        //if(!ifs.good()){break;}
+
+        //check if buffer is empty (there is empty line), jump to next line
+        if(buffer.empty()){continue;}
+
+        unsigned int i = 0;
+        while(1)
+        {
+            if(buffer.at(i)==','){i++;break;}
+            nodeA.push_back(buffer.at(i));
+            i++;
+        }
+
+        while(1)
+        {
+            if(buffer.at(i)==','){i++;break;}
+            weight_s.push_back(buffer.at(i));
+            i++;
+        }
+
+        while(1)
+        {
+            if(i==buffer.length()){break;}
+            nodeB.push_back(buffer.at(i));
+            i++;
+        }
+
+        weight = std::stoi(weight_s);
+        std::cout<<nodeA<<"-"<<weight<<"-"<<nodeB<<"\n";
+        this->addEdge(weight,nodeA,nodeB);
+
+        nodeA.erase(nodeA.begin(),nodeA.end());
+        nodeB.erase(nodeB.begin(),nodeB.end());
+        weight_s.erase(weight_s.begin(),weight_s.end());
+        if(!ifs.good()){break;}
+
+    }
+
+    ifs.close();
+
+    this->addNodesFromGraphEdges();
+    return;
+}
+
+void Graph::deleteGraph()
+{
+    this->graphEdges.erase(this->graphEdges.begin(),this->graphEdges.end());
+    this->graphNodes.erase(this->graphNodes.begin(),this->graphNodes.end());
+    return;
+}
+
+void Graph::generateRandomGraph(unsigned int numberOfNodes,unsigned int numberOfEdges,unsigned int minWeight, unsigned int maxWeight)
+{
+    /*
+     * Recommended that number of nodes is less than 25 (A to Z)
+     * Edges are recommended to be equal or more than number of nodes but is not necessary
+     * Weights should be higher than 0 and less than MAX_INT (32767)
+     * Consider weights below 7 so that the paths are single digit, in that case the
+     * formatting of tables is neat.
+     * Eventually it could generate Graph that are not closed , in that case it hangs...
+     * This is because of the nature of the Dijkstra's Algorithm. It needs reachable nodes.
+     * To avoid that consider putting considerable more edges than nodes
+    */
+
+    srand (time(NULL));
+
+    while(this->graphEdges.size()<numberOfEdges)
+    {
+        char a = 'A';
+        char b = 'A';
+
+        //avoid self connecting nodes
+        while(a==b)
+        {
+
+            a = rand() % ('A'+ numberOfNodes - 'A' + 1) + 'A';
+            b = rand() % ('A'+ numberOfNodes - 'A' + 1) + 'A';
+        }
+
+        // std::cout<<"\n"<<a<<"-"<<b<<"\n";
+        std::string sa;
+        std::string sb;
+
+        sa.push_back(a);
+        sb.push_back(b);
+
+        int weight = rand() % (maxWeight - minWeight + 1) + minWeight;
+
+        this->addEdge(weight,sa,sb);
+    }
+
+    this->addNodesFromGraphEdges();
+}
+
+void Graph::saveGraphToFile(std::string filename)
+{
+    std::fstream ofs(filename,std::ifstream::out| std::fstream::trunc);
+    for(unsigned int i =0;i < this->graphEdges.size();i++)
+    {
+        if(i<this->graphEdges.size()-1)
+        {
+            ofs<<this->graphEdges.at(i).getNodeA().getNodeName()<<","<<this->graphEdges.at(i).getEdgeWeight()<<","<<this->graphEdges.at(i).getNodeB().getNodeName()<<"\n";
+        }
+        else //last
+        {
+            ofs<<this->graphEdges.at(i).getNodeA().getNodeName()<<","<<this->graphEdges.at(i).getEdgeWeight()<<","<<this->graphEdges.at(i).getNodeB().getNodeName();
+        }
+    }
+
+    ofs.close();
 }
 

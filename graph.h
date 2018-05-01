@@ -4,6 +4,10 @@
 #include <vector>
 #include <stack>
 
+/*
+For best formating use nodes and weights of single characters.
+*/
+
 class Node
 {
 public:
@@ -63,6 +67,7 @@ public:
     //methods
     Graph();
     Graph(std::string name);
+    std::string getGraphName();
     void printGraphNodes();
     void printGraphEdges();
     int buildTable(Node * node);
@@ -94,9 +99,10 @@ public:
     void showTableOfNode(std::string nameA);
     void showTableOfGraph();
     void showAllNodeTables();
-    //void loadEdgeFile();
-    //void deleteGraph();
-    //void generateEdgeFile();
+    void loadEdgeFile(std::string filename);
+    void deleteGraph();
+    void generateRandomGraph(unsigned int numberOfNodes, unsigned int numberOfEdges, unsigned int minWeight, unsigned int maxWeight);
+    void saveGraphToFile(std::string filename);
 
 };
 
