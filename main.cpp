@@ -43,11 +43,36 @@ int main()
     std::cout<<network2.getTheWay("A","E")<<" with cost "<<network2.getWayWeight("A","E");
     std::cout<<std::endl;
 
-    //network.showTableOfNode("A");
+    network.showTableOfNode("A");
     network.showAllNodeTables();
     network.showTableOfGraph();
     network2.showTableOfGraph();
     network2.showAllNodeTables();
     network2.showTableOfGraph();
+
+    Graph network3("Network 3");
+    network3.loadEdgeFile("net.txt");
+    network3.printGraphNodes();
+    network3.printGraphEdges();
+
+    network3.showAllNodeTables();
+    network3.showTableOfGraph();
+
+    Graph network4("Network 4");
+    network4.generateRandomGraph(4,4,1,4);
+    network4.printGraphEdges();
+    network4.printGraphNodes();
+
+    network4.showAllNodeTables();
+    network4.showTableOfGraph();
+    network4.saveGraphToFile("networkk.txt");
+
+    Graph net("net");
+    net.loadEdgeFile("networkk.txt");
+    net.printGraphEdges();
+    net.printGraphNodes();
+    net.showAllNodeTables();
+    net.showTableOfGraph();
+
     return 0;
 }
