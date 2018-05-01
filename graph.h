@@ -100,7 +100,7 @@ public:
     void showTableOfGraph();
     void showAllNodeTables();
     void loadEdgeFile(std::string filename);
-    //void deleteGraph();
+    void deleteGraph();
     void generateRandomGraph(unsigned int numberOfNodes, unsigned int numberOfEdges, unsigned int minWeight, unsigned int maxWeight);
     void saveGraphToFile(std::string filename);
 

@@ -7,7 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define MAX_INT 32767
+#define MAX_INT 32767 // represents infinite weigth (node is unreachable)
 
 Node::Node()
 {
@@ -138,6 +138,12 @@ void Graph::printGraphEdges()
 
 int Graph::buildTable(Node * node)
 {
+    /*
+     *  Based on:https://medium.com/basecs/finding-the-shortest-path-with-a-little-help-from-dijkstra-613149fbdc8e
+     *  Dijkstra’s algorithm can be used to determine the shortest path from one node
+     *  in a graph to every other node within the same graph data structure, provided
+     *  that the nodes are reachable from the starting node.
+    */
     //check if node exist on graph
     if(!this->findNode(*node,this->graphNodes))
     {
@@ -621,7 +627,7 @@ void Graph::loadEdgeFile(std::string filename)
     {
         std::getline(ifs,buffer);
 
-        if(!ifs.good()){break;}
+        //if(!ifs.good()){break;}
 
         //check if buffer is empty (there is empty line), jump to next line
         if(buffer.empty()){continue;}
@@ -665,9 +671,26 @@ void Graph::loadEdgeFile(std::string filename)
     return;
 }
 
+void Graph::deleteGraph()
+{
+    this->graphEdges.erase(this->graphEdges.begin(),this->graphEdges.end());
+    this->graphNodes.erase(this->graphNodes.begin(),this->graphNodes.end());
+    return;
+}
+
 void Graph::generateRandomGraph(unsigned int numberOfNodes,unsigned int numberOfEdges,unsigned int minWeight, unsigned int maxWeight)
 {
-    //(rand() + lower)%(upper+1)
+    /*
+     * Recommended that number of nodes is less than 25 (A to Z)
+     * Edges are recommended to be equal or more than number of nodes but is not necessary
+     * Weights should be higher than 0 and less than MAX_INT (32767)
+     * Consider weights below 7 so that the paths are single digit, in that case the
+     * formatting of tables is neat.
+     * Eventually it could generate Graph that are not closed , in that case it hangs...
+     * This is because of the nature of the Dijkstra's Algorithm. It needs reachable nodes.
+     * To avoid that consider putting considerable more edges than nodes
+    */
+
     srand (time(NULL));
 
     while(this->graphEdges.size()<numberOfEdges)
